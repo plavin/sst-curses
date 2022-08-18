@@ -4,6 +4,8 @@
 #include <vector>
 #include <ncurses.h>
 
+//#include "sst/core/eli/elementinfo.h"
+
 using namespace std;
 
 void logo(WINDOW *win, int yoffset, int xoffset) {
@@ -19,6 +21,8 @@ vector<string> menuchoices = {
     "(3) Create example project",
     "(4) Interactive project builder"
 };
+
+string navigation = "Use the arrow keys to navigate, press enter";
 
 inline int positive_modulo(int i, int n) {
     return (i % n + n) % n;
@@ -47,8 +51,10 @@ int menu(WINDOW *win, int yoffset, int xoffset) {
 
         switch (c) {
             case KEY_UP:
+            case 'k':
                 choice = positive_modulo(choice-1, menuchoices.size());
                 break;
+            case 'j':
             case KEY_DOWN:
                 choice = positive_modulo(choice+1, menuchoices.size());
                 break;
@@ -80,8 +86,27 @@ int main(int argc, char **argv)
     WINDOW *win = newwin(maxy, maxx, 0, 0);
     refresh();
 
-    box(win, 0, 0);
+    //wattron(win, A_REVERSE);
+    box(win, 219, 0);
+    mvwprintw(win, 0, 2, "[sst-curses]");
     wrefresh(win);
+    //wattroff(win, A_REVERSE);
+
+    mvwprintw(win, 0, 16, "[sst-info]");
+    wrefresh(win);
+
+    /*
+    WINDOW *sstinfo = newwin(maxy-2, maxx-2, 1, 1);
+    refresh();
+    box(sstinfo, 0, 0);
+    mvwprintw(sstinfo, 0, 3, "[ sst-info ]");
+    wrefresh(sstinfo);
+*/
+
+    //wattron(win, A_REVERSE);
+    mvwprintw(win, maxy-2, 2, "Navitaion:");
+    //wattroff(win, A_REVERSE);
+    getch();
 
     logo(win, 2, (maxx-50) / 2);
     int choice = menu(win, 7, 2);
