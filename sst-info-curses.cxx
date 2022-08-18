@@ -22,15 +22,48 @@ vector<string> menuchoices = {
     "(4) Interactive project builder"
 };
 
-string navigation = "Use the arrow keys to navigate, press enter";
+string navigation = "Navigate with arrow keys, enter, and escape.";
 
 inline int positive_modulo(int i, int n) {
     return (i % n + n) % n;
 }
 
+void update_title_bar(WINDOW *win, int choice) {
+    switch (choice) {
+        case 0:
+            //mvwprintw(win, 0, 15, "──────────────────");
+            box(win, 0, 0);
+            mvwprintw(win, 0, 2, "[SST-Curses]");
+            break;
+        case 1:
+            box(win, 0, 0);
+            mvwprintw(win, 0, 2, "[SST-Curses]");
+            mvwprintw(win, 0, 15, "[sst-info]");
+            break;
+        case 2:
+            box(win, 0, 0);
+            mvwprintw(win, 0, 2, "[SST-Curses]");
+            mvwprintw(win, 0, 15, "[Search by Tag]");
+            break;
+        case 3:
+            box(win, 0, 0);
+            mvwprintw(win, 0, 2, "[SST-Curses]");
+            mvwprintw(win, 0, 15, "[Example Projects]");
+            break;
+        case 4:
+            box(win, 0, 0);
+            mvwprintw(win, 0, 2, "[SST-Curses]");
+            mvwprintw(win, 0, 15, "[Project Builder]");
+            break;
+
+    }
+    wrefresh(win);
+}
+
 int menu(WINDOW *win, int yoffset, int xoffset) {
     static int choice = 0;
 
+    update_title_bar(win, 0);
     noecho();
     keypad(win,true);
     mvwprintw(win, yoffset, xoffset, "Select an option:");
@@ -60,20 +93,40 @@ int menu(WINDOW *win, int yoffset, int xoffset) {
                 break;
             case KEY_ENTER:
             case 10:
-                return choice;
+                return choice+1;
             case '1':
-                return 0;
-            case '2':
                 return 1;
-            case '3':
+            case '2':
                 return 2;
-            case '4':
+            case '3':
                 return 3;
+            case '4':
+                return 4;
         }
     }
     return choice;
 
 }
+void panel_sst_info(WINDOW *win) {
+    while(1) {
+        int c = wgetch(win);
+        if (c == 27) {
+        //    wclear(win);
+         //   wrefresh(win);
+            return;
+        }
+    }
+}
+void panel_search(WINDOW *win) {
+    getch();
+}
+void panel_example(WINDOW *win) {
+    getch();
+}
+void panel_builder(WINDOW *win) {
+    getch();
+}
+
 
 int main(int argc, char **argv)
 {
@@ -84,15 +137,21 @@ int main(int argc, char **argv)
     int maxy, maxx;
     getmaxyx(stdscr, maxy, maxx);
     WINDOW *win = newwin(maxy, maxx, 0, 0);
+    //mvprintw(maxy, 10, "Navigation:");
     refresh();
 
     //wattron(win, A_REVERSE);
-    box(win, 219, 0);
-    mvwprintw(win, 0, 2, "[sst-curses]");
+    box(win, 0, 0);
+    //cchar_t verch, horch;
+    //setcchar(&verch, L"o", 0, 0, NULL);
+    //setcchar(&horch, L"o", 0, 0, NULL);
+    //box_set(win, &verch, &horch);
+    update_title_bar(win, 0);
+    //mvwprintw(win, 0, 2, "[sst-curses]");
+    mvwprintw(win, maxy-2, (maxx-navigation.length())/2, navigation.c_str());
     wrefresh(win);
     //wattroff(win, A_REVERSE);
 
-    mvwprintw(win, 0, 16, "[sst-info]");
     wrefresh(win);
 
     /*
@@ -103,14 +162,32 @@ int main(int argc, char **argv)
     wrefresh(sstinfo);
 */
 
-    //wattron(win, A_REVERSE);
-    mvwprintw(win, maxy-2, 2, "Navitaion:");
-    //wattroff(win, A_REVERSE);
-    getch();
+    // main loop
+    while (1) {
+        logo(win, 2, (maxx-50) / 2);
+        int choice = menu(win, 7, 2);
+        update_title_bar(win, choice);
+        //wclear(win);
+        //wrefresh(win);
+        switch (choice) {
+            case 1:
+                panel_sst_info(win);
+                break;
+            case 2:
+                panel_search(win);
+                break;
+            case 3:
+                panel_example(win);
+                break;
+            case 4:
+                panel_builder(win);
+                break;
+        }
+    }
 
     logo(win, 2, (maxx-50) / 2);
     int choice = menu(win, 7, 2);
-
+    update_title_bar(win, choice);
 
     WINDOW *input = newwin(3, maxx-4, maxy-4, 2);
     box(input,0,0);
