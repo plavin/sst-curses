@@ -22,7 +22,7 @@ vector<string> menuchoices = {
     "(4) Interactive project builder"
 };
 
-string navigation = "Navigate with arrow keys, enter, and escape.";
+string navigation = "Navigate with arrow keys, enter, and escape (or '-').";
 
 inline int positive_modulo(int i, int n) {
     return (i % n + n) % n;
@@ -63,6 +63,8 @@ void update_title_bar(WINDOW *win, int choice) {
 int menu(WINDOW *win, int yoffset, int xoffset) {
     static int choice = 0;
 
+    curs_set(0);
+
     update_title_bar(win, 0);
     noecho();
     keypad(win,true);
@@ -75,11 +77,10 @@ int menu(WINDOW *win, int yoffset, int xoffset) {
             if (choice == i) {
                 wattron(win, A_REVERSE);
             }
-            mvwprintw(win, yoffset+1+i, xoffset, menuchoices[i].c_str());
+            mvwprintw(win, yoffset+2+i, xoffset, menuchoices[i].c_str());
             wattroff(win, A_REVERSE);
         }
         wrefresh(win);
-
         int c = wgetch(win);
 
         switch (c) {
@@ -107,24 +108,55 @@ int menu(WINDOW *win, int yoffset, int xoffset) {
     return choice;
 
 }
-void panel_sst_info(WINDOW *win) {
+void panel_sst_info(int maxy, int maxx) {
+    WINDOW *sst_info = newwin(maxy-2, maxx-2, 1, 1);
+    mvwprintw(sst_info, 2, 2, "Welcome to sst-info!");
+    wrefresh(sst_info);
+
+    keypad(sst_info, true);
+
     while(1) {
-        int c = wgetch(win);
-        if (c == 27) {
-        //    wclear(win);
-         //   wrefresh(win);
+        int c = wgetch(sst_info);
+        if (c == 27 || c == '-') { // ESC or '-'
             return;
         }
     }
 }
-void panel_search(WINDOW *win) {
-    getch();
+void panel_search(int maxy, int maxx) {
+    WINDOW *sst_info = newwin(maxy-2, maxx-2, 1, 1);
+    mvwprintw(sst_info, 2, 2, "Welcome to the search tool!");
+    wrefresh(sst_info);
+
+    while(1) {
+        int c = wgetch(sst_info);
+        if (c == 27 || c == '-') { // ESC or '-'
+            return;
+        }
+    }
 }
-void panel_example(WINDOW *win) {
-    getch();
+void panel_example(int maxy, int maxx) {
+    WINDOW *sst_info = newwin(maxy-2, maxx-2, 1, 1);
+    mvwprintw(sst_info, 2, 2, "Welcome to the example project catalog!");
+    wrefresh(sst_info);
+
+    while(1) {
+        int c = wgetch(sst_info);
+        if (c == 27 || c == '-') { // ESC or '-'
+            return;
+        }
+    }
 }
-void panel_builder(WINDOW *win) {
-    getch();
+void panel_builder(int maxy, int maxx) {
+    WINDOW *sst_info = newwin(maxy-2, maxx-2, 1, 1);
+    mvwprintw(sst_info, 2, 2, "Welcome to the interactive project builder!");
+    wrefresh(sst_info);
+
+    while(1) {
+        int c = wgetch(sst_info);
+        if (c == 27 || c == '-') { // ESC or '-'
+            return;
+        }
+    }
 }
 
 
@@ -165,26 +197,27 @@ int main(int argc, char **argv)
     // main loop
     while (1) {
         logo(win, 2, (maxx-50) / 2);
-        int choice = menu(win, 7, 2);
+        int choice = menu(win, (maxy-menuchoices.size())/2, (maxx-31)/2);
         update_title_bar(win, choice);
         //wclear(win);
         //wrefresh(win);
         switch (choice) {
             case 1:
-                panel_sst_info(win);
+                panel_sst_info(maxy, maxx);
                 break;
             case 2:
-                panel_search(win);
+                panel_search(maxy, maxx);
                 break;
             case 3:
-                panel_example(win);
+                panel_example(maxy, maxx);
                 break;
             case 4:
-                panel_builder(win);
+                panel_builder(maxy, maxx);
                 break;
         }
     }
 
+    /*
     logo(win, 2, (maxx-50) / 2);
     int choice = menu(win, 7, 2);
     update_title_bar(win, choice);
@@ -209,6 +242,7 @@ int main(int argc, char **argv)
         }
     }
 
+    */
 
     endwin();
     return 0;
